@@ -1,54 +1,54 @@
 import streamlit as st
 import numpy as np
 import cv2 as cv
-from PIL import Image
 from modelo.unet import unet
 from proceso import imagenProceso, removerAreas, aumentoTam, cuadrarRect
+
+
 def saludo():
-    st.header(" Anest App")
+    # Título de la App
+    st.header("Anest App")
+    # Descripción del aplicativo
+    texto = """ Esta aplicación permite extraer la información relevante de los 
+    dispositivos de ul ultrasonido  
+    """
+    st.write(texto)
+
 
 def camara():
-    #picture = st.camera_input("Take a picture")
-    uploaded_file = st.file_uploader("Suba la foto")
+    # Cargar imagen o tomar foto
+    uploaded_file = st.file_uploader("Cargar o Tomar la Foto")
 
     if uploaded_file is not None:
-
+        # Extraer la imagen en formato Bytes
         st.image(uploaded_file.getvalue())
+        # Decodificar la imagen para ser  leida como una lista
         imagen = cv.imdecode(np.frombuffer(uploaded_file.getvalue(), np.uint8), cv.IMREAD_GRAYSCALE)
-
-        # Lectura del Archivo
-        # st.write("filename:", uploaded_file.name)
-        #img = Image.open(picture)
+        # Convertir la lista en array
         img_array = np.array(imagen)
-        #print(img_array.shape)
-        #st.image(picture)
+        # Creación del modelo
         modelo = unet()
+        # Cargar los pesos pre-entrenados del modelo
         modelo.load_weights('pesos/pesosBalanceBlancos.h5')
+        # Procesar la imagen-array
         p = imagenProceso(img_array)
+        # Pasar la imagen procesada a la etapa de inferencia
         prediccion = modelo.predict(p)
-        #print(prediccion.min(), prediccion.max(), sum(prediccion))
+        # Limitar la predicción
         aux = prediccion < 1.0
         prediccion[aux] = 0
+        # Pasar de un tensor-imagen a una imagen que se pueda mostrar
         prediccion = prediccion[0, :, :, 0]
-        #print(prediccion.shape)
+        # Eliminar areas pequeñas de la imagen
         dd = removerAreas(prediccion)
+        # Redondear los valores del preproces anterior
         n = np.round(aumentoTam(dd, img_array.shape))
+        # Calcular el rectángulo que encierra la predicción
         cc = cuadrarRect(n)
-        ee = np.multiply(cc, img_array)/255.0
-        print(ee.max())
-        print(ee.min())
-        #print(n.shape)
+        # Multiplicar el rectángulo con la imagen original
+        ee = np.multiply(cc, img_array) / 255.0
+        # Mostrar la imagen
         st.image(ee)
-
-        btn = st.button("Descargar Imagen")
-        if btn:
-            cv.imwrite('imagen.png', np.uint8(255*ee))
-            print("ya")
-        #descarga = st.button("Download")
-        #im = Image.fromarray(ee * 255)
-        #print(prediccion)
-
-
 
 
 saludo()
