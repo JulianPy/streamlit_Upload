@@ -10,7 +10,7 @@ def saludo():
     st.header("Anest App")
     # Descripción del aplicativo
     texto = """ Esta aplicación permite extraer la información relevante de los 
-    dispositivos de ul ultrasonido  
+    dispositivos de ultrasonido  
     """
     st.write(texto)
 
