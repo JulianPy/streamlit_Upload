@@ -63,7 +63,7 @@ def aumentoTam(imagen, tamNuevo):
     resized_imagen = cv.resize(imagen,
                                (tamNuevo[1], tamNuevo[0]),
                                interpolation=cv.INTER_AREA)
-    #resized_imagen = Limitar(resized_imagen)
+    # resized_imagen = Limitar(resized_imagen)
     return resized_imagen
 
 
@@ -104,4 +104,10 @@ def cuadrarRect(mascara):
         # para que quede solo el recuadro, cambiar el -1 por un 2
         cv.rectangle(imgRGB, top_left, bottom_right, (255, 255, 255), -1)
 
-    return imgRGB[:, :, 0]/255.0
+    return imgRGB[:, :, 0] / 255.0
+
+
+def dimRec(mascara, imagen):
+    cnts, _ = cv.findContours(np.uint8(mascara), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    mask = imagen[cnts[0][0][0][1]: cnts[0][1][0][1], cnts[0][0][0][0]: cnts[0][2][0][0]]
+    return mask
