@@ -14,6 +14,7 @@ def saludo():
     texto = """ Esta aplicación permite extraer la información relevante de los 
     dispositivos de ultrasonido. Primero extrae la imagen,para después extraer
     los metadatos que arroja el dispositivo de ultrasonido. 
+    dispositivos de ultrasonido  
     """
     st.write(texto)
 
